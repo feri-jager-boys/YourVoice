@@ -10,6 +10,11 @@ var PostSchema = new Schema({
     ref: 'users',
     required: true,
   },
+  forumId: {
+    type: Schema.Types.ObjectId,
+    ref: 'forums',
+    required: true,
+  },
   upvotes: { type: Number, default: 0 },
   downvotes: { type: Number, default: 0 },
   comments: [
