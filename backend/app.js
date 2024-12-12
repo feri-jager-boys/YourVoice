@@ -1,4 +1,3 @@
-var dbAuth = require('./dbdata');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -9,9 +8,7 @@ var mongoose = require('mongoose');
 var cors = require('cors');
 
 var mongoDB =
-  'mongodb+srv://' +
-  dbAuth +
-  '@yourvoice.beii5.mongodb.net/YourVoice?retryWrites=true&w=majority&appName=YourVoice';
+    "mongodb+srv://affectdrain0b:7e8D9AO3ztWHtiW1@cluster0.zblai.mongodb.net/wise-timetable?retryWrites=true&w=majority";
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // LOKALNA POVEZAVA - MORA DELAT (ZAKOMENTIRAJ ZGORNJO KODO IN UPORABI ZAKOMENTIRANO)
