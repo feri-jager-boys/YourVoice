@@ -23,6 +23,32 @@ module.exports = {
       });
   },
 
+  byForum: async function (req, res) {
+    console.log('a')
+    try {
+      const forumId = req.params.id;
+      console.log(forumId)
+
+      if (!forumId) {
+        return res.status(400).json({
+          message: 'Forum ID is required.',
+        });
+      }
+
+      const posts = await PostModel.find({ forumId })
+          .populate('userId', 'username') // Only fetch 'username' field from userId
+          .exec();
+
+      return res.json(posts);
+    } catch (err) {
+      return res.status(500).json({
+        message: 'An error occurred while retrieving posts.',
+        error: err.message,
+      });
+    }
+  },
+
+
   // Posodobljena metoda za prikaz posamezne objave
   show: function (req, res) {
     var id = req.params.id;
@@ -57,6 +83,7 @@ module.exports = {
       content: req.body.content,
       category: req.body.category,
       userId: req.body.userId,
+      forumId: req.body.forumId,
     });
 
     newPost.save(function (err, Post) {

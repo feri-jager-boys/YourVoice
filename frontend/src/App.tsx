@@ -10,6 +10,7 @@ import { UserContext } from './userContext';
 import Home from './pages/Home'; // Potrdite pravilno pot
 import Posts from './pages/Posts'; // Dodajte direktni import za Posts
 import PostDetail from './components/PostDetail';
+import Forums from "./pages/Forums";
 
 function App() {
   const [user, setUser] = useState<User | null>(
@@ -43,9 +44,10 @@ function App() {
           <Routes>
             {/* Stran Home je vedno dostopna */}
             <Route path="/" element={<Home />} />
+            <Route path="/forums" element={<Forums />} />
 
             {/* Javni Routes - stran Objave vključena za vse */}
-            <Route path="/posts" element={<Posts />} />
+            <Route path="/forums/:forumId" element={<Posts />} />
             <Route path="/posts/:id" element={<PostDetail />} />
             {publicRoutes
               .filter((route) => route.to !== '/' && route.to !== '/posts') // Home in Objave izvzeti

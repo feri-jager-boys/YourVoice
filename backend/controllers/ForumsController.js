@@ -3,7 +3,7 @@ var ForumsModel = require('../models/ForumsModel');
 module.exports = {
     list: function (req, res) {
         ForumsModel.find()
-            .populate('userId', 'username') // Dodano za pridobitev username polja iz User modela
+            .populate('adminId', 'username') // Dodano za pridobitev username polja iz User modela
             .exec(function (err, Posts) {
                 if (err) {
                     return res.status(500).json({
@@ -41,7 +41,7 @@ module.exports = {
     create: function (req, res) {
         var newForum = new ForumsModel({
             title: req.body.title,
-            adminId: req.body.userId,
+            adminId: req.body.admin,
         });
 
         newForum.save(function (err, forum) {

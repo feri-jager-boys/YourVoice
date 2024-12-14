@@ -40,7 +40,7 @@ const Home: React.FC = () => {
             </Heading>
             <Button
               as={RouterLink}
-              to="/posts"
+              to="/forums"
               size="lg"
               colorScheme="blue"
               rounded="full"

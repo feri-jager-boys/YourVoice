@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   content: string;
   category: string;
-  //userId: string;
+  forumId: number;
   userId: {
     _id: string;
     username: string;

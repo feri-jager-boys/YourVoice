@@ -11,18 +11,21 @@ import {
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
-import { Link } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Posts: React.FC = () => {
+  const { forumId } = useParams<{ forumId: string }>();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const loadPosts = () => {
     setLoading(true);
-    fetch('http://localhost:3000/post')
+    fetch(`http://localhost:3000/post/byForum/${forumId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -137,6 +140,7 @@ const Posts: React.FC = () => {
         }}
         onPostAdded={handlePostAdded}
         post={selectedPost} // Pass selected post to the modal
+        forumId={forumId}
       />
     </Box>
   );

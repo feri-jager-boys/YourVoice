@@ -14,6 +14,8 @@ function requiresLogin(req, res, next){
 
 router.get('/', PostController.list);
 
+router.get('/byForum/:id', PostController.byForum);
+
 router.get('/:id', PostController.show);
 
 router.post('/', PostController.create);

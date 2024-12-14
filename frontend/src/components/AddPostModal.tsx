@@ -23,13 +23,14 @@ interface AddPostModalProps {
   onClose: () => void;
   onPostAdded: () => void;
   post: Post | null;
+  forumId?: string;
 }
 
 const AddPostModal: React.FC<AddPostModalProps> = ({
   isOpen,
   onClose,
   onPostAdded,
-  post,
+  post, forumId,
 }) => {
   const { user } = useContext(UserContext); // Get the currently logged-in user
   const [title, setTitle] = useState('');
@@ -70,6 +71,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
         content,
         category,
         userId: user._id, // Include userId
+        forumId: forumId, // Include forumId
       }),
     })
       .then((response) => {
