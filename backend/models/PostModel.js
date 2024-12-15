@@ -17,12 +17,6 @@ var PostSchema = new Schema({
   },
   upvotes: { type: Number, default: 0 },
   downvotes: { type: Number, default: 0 },
-  comments: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'comments',
-    },
-  ],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

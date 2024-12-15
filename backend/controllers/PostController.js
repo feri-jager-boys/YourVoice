@@ -1,5 +1,6 @@
 var PostModel = require('../models/PostModel');
 var CommentModel = require('../models/CommentModel');
+const mongoose = require("mongoose");
 
 /**
  * PostController.js
@@ -24,10 +25,8 @@ module.exports = {
   },
 
   byForum: async function (req, res) {
-    console.log('a')
     try {
       const forumId = req.params.id;
-      console.log(forumId)
 
       if (!forumId) {
         return res.status(400).json({
@@ -54,12 +53,9 @@ module.exports = {
     var id = req.params.id;
 
     PostModel.findOne({ _id: id })
-      .populate('userId', 'username') // Populacija za prikaz avtorja
-      .populate({
-        path: 'comments',
-        populate: { path: 'userId', select: 'username' }, // Populacija uporabnikov v komentarjih
-      })
-      .exec(function (err, post) {
+      .populate('userId', 'username')
+      .lean()
+      .exec(async function (err, post) {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting Post.',
@@ -73,7 +69,24 @@ module.exports = {
           });
         }
 
-        return res.json(post);
+        await CommentModel
+          .find({ postId: mongoose.Types.ObjectId(id) })
+          .populate('userId', 'username')
+          .lean()
+          .exec(async function (err, comments) {
+            const topComments = comments.filter(x => x.parentId == null);
+
+            const fetchReplies = (comment) => {
+              comment.replies = comments.filter(y => y.parentId && y.parentId.equals(comment._id));
+              comment.replies.forEach(fetchReplies);
+            };
+
+            topComments.forEach(fetchReplies);
+
+            post.comments = topComments;
+
+            return res.json(post);
+          });
       });
   },
 
@@ -144,75 +157,5 @@ module.exports = {
 
       return res.status(204).json();
     });
-  },
-
-  addComment: async function (req, res) {
-    const postId = req.params.id;
-
-    // Preveri, ali so potrebni podatki prisotni
-    if (!req.body.content || !req.body.userId) {
-      return res.status(400).json({
-        message: 'Content and userId are required',
-      });
-    }
-
-    try {
-      const newComment = new CommentModel({
-        content: req.body.content,
-        userId: req.body.userId,
-      });
-
-      const comment = await newComment.save();
-      console.log('Saved Comment:', comment);
-
-      // Dodaj komentar v objavo
-      const post = await PostModel.findByIdAndUpdate(
-        postId,
-        { $push: { comments: comment._id } },
-        { new: true }
-      )
-        .populate('comments')
-        .exec();
-
-      // console.log('Updated Post with New Comment:', post);
-      return res.status(201).json(post);
-    } catch (err) {
-      console.log('Error:', err.message || err);
-      return res.status(500).json({
-        message: 'Error when creating comment or updating post',
-        error: err.message || err,
-      });
-    }
-  },
-
-  removeComment: async function (req, res) {
-    const postId = req.params.id;
-    const commentId = req.params.commentId;
-
-    try {
-      const comment = await CommentModel.findByIdAndRemove(commentId);
-
-      if (!comment) {
-        return res.status(404).json({
-          message: 'No such comment',
-        });
-      }
-
-      const post = await PostModel.findByIdAndUpdate(
-        postId,
-        { $pull: { comments: commentId } },
-        { new: true }
-      )
-        .populate('comments')
-        .exec();
-
-      return res.status(204).json(post);
-    } catch (err) {
-      console.log('Error:', err.message || err);
-      return res.status(500).json({
-        message: 'Error when deleting comment or updating post',
-        error: err.message || err,
-      });
-    }
   },
 };

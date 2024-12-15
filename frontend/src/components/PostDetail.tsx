@@ -20,35 +20,38 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
+import CommentListComponent from "./CommentListComponent";
 
-interface User {
+interface UserApiResponse {
   username: string;
   _id: string;
 }
 
-interface Comment {
-  _id: string;
-  content: string;
-  createdAt: string;
-  userId: User;
+export interface CommentApiResponse {
+  _id: string,
+  content: string,
+  createdAt: string,
+  userId: UserApiResponse,
+  replies: CommentApiResponse[],
 }
 
-interface Post {
+interface PostApiResponse {
   title: string;
   content: string;
   category: string;
   createdAt: string;
-  userId?: User;
-  comments?: Comment[];
+  userId?: UserApiResponse;
+  comments: CommentApiResponse[];
 }
 
 const PostDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [post, setPost] = useState<Post | null>(null);
+  const {id} = useParams<{ id: string }>();
+  const [post, setPost] = useState<PostApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user } = useContext(UserContext);
+  const [parentComment, setParentComment] = useState<string | null>(null);
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const {user} = useContext(UserContext);
   const navigate = useNavigate();
 
   // Ustvarite ref za textarea
@@ -77,6 +80,11 @@ const PostDetail: React.FC = () => {
     fetchPost(); // Inicialno naložite podatke o objavi
   }, [id]);
 
+  const openCommentModal = (parentCommentId: string | null) => {
+    setParentComment(parentCommentId)
+    onOpen();
+  };
+
   const handleCommentSubmit = () => {
     if (newComment.trim() === '') {
       alert('Komentar ne sme biti prazen.');
@@ -88,7 +96,7 @@ const PostDetail: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/post/${id}/comment`, {
+    fetch(`http://localhost:3000/comment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,6 +104,8 @@ const PostDetail: React.FC = () => {
       body: JSON.stringify({
         content: newComment,
         userId: user._id,
+        parentId: parentComment,
+        postId: id,
       }),
     })
       .then((response) => {
@@ -120,7 +130,7 @@ const PostDetail: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/post/${id}/comment/${commentId}`, {
+    fetch(`http://localhost:3000/comment/${commentId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -177,48 +187,22 @@ const PostDetail: React.FC = () => {
             Komentarji
           </Heading>
 
-          <Button colorScheme="teal" mb={4} onClick={onOpen}>
+          <Button colorScheme="teal" mb={4} onClick={() => openCommentModal(null)}>
             Dodaj komentar
           </Button>
 
           {post.comments && post.comments.length > 0 ? (
-            <VStack spacing={4} align="start">
-              {post.comments
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .map((comment) => (
-                  <Box
-                    key={comment._id}
-                    p={4}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    w="full"
-                  >
-                    <Text fontSize="sm" color="gray.500">
-                      {comment.userId.username} -{' '}
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </Text>
-                    <Text>{comment.content}</Text>
-                    {user?._id === comment.userId._id && (
-                      <Button
-                        colorScheme="red"
-                        size="sm"
-                        mt={2}
-                        onClick={() => handleCommentDelete(comment._id)}
-                      >
-                        Izbriši
-                      </Button>
-                    )}
-                  </Box>
-                ))}
-            </VStack>
+            <CommentListComponent
+                comments={post.comments}
+                user={user}
+                handleCommentDelete={handleCommentDelete}
+                openCommentModal={openCommentModal} />
           ) : (
-            <Text color="gray.500">
-              Ni komentarjev. Bodite prvi, ki komentirate!
-            </Text>
+            <VStack alignItems="flex-start">
+              <Text color="gray.500">
+                Ni komentarjev. Bodite prvi, ki komentirate!
+              </Text>
+            </VStack>
           )}
 
           <Modal
