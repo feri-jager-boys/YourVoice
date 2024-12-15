@@ -25,7 +25,7 @@ const Posts: React.FC = () => {
 
   const loadPosts = () => {
     setLoading(true);
-    fetch(`http://localhost:3000/post/byForum/${forumId}`)
+    fetch(forumId ? `http://localhost:3000/post/byForum/${forumId}` : "http://localhost:3000/post/")
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -104,7 +104,7 @@ const Posts: React.FC = () => {
                 Kategorija: {post.category}
               </Text>
               <Text mt={2} fontSize="sm" color="gray.500">
-                Avtor: {post?.userId?.username || 'Neznan uporabnik'}
+                Avtor: {post?.userId?.username || 'Neznan uporabnik'} { forumId ? "" : " v forumu " + post.forumId.title }
               </Text>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>

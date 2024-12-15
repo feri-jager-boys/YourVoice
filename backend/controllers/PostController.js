@@ -16,7 +16,8 @@ module.exports = {
   list: function (req, res) {
     PostModel.find()
       .populate('userId', 'username') // Dodano za pridobitev username polja iz User modela
-      .exec(function (err, Posts) {
+      .populate('forumId', 'title')
+        .exec(function (err, Posts) {
         if (err) {
           return res.status(500).json({
             message: 'Error when getting Post.',
