@@ -6,4 +6,7 @@ router.post('/', CommentController.add);
 
 router.delete('/:id', CommentController.remove);
 
+router.put('/upvote/:id', CommentController.upvote);
+router.put('/downvote/:id', CommentController.downvote);
+
 module.exports = router;

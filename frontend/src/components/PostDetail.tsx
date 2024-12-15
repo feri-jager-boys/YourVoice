@@ -27,11 +27,18 @@ interface UserApiResponse {
   _id: string;
 }
 
+export enum CommentVoteTypes {
+  UPVOTE = 1,
+  DOWNVOTE = 2,
+}
+
 export interface CommentApiResponse {
   _id: string,
   content: string,
   createdAt: string,
   userId: UserApiResponse,
+  votes: Number,
+  userVote: CommentVoteTypes;
   replies: CommentApiResponse[],
 }
 
@@ -59,7 +66,9 @@ const PostDetail: React.FC = () => {
 
   const fetchPost = () => {
     setLoading(true);
-    fetch(`http://localhost:3000/post/${id}`)
+    fetch(`http://localhost:3000/post/${id}?` + new URLSearchParams({
+      userId : user?._id ?? ""
+    }).toString())
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -147,6 +156,58 @@ const PostDetail: React.FC = () => {
       });
   };
 
+  const handleCommentUpvote = (commentId: string) => {
+    if (!user) {
+      alert('Prijavite se za upvote komentarja.');
+      return;
+    }
+
+    fetch(`http://localhost:3000/comment/upvote/${commentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user._id,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Napaka pri upvote komentarja');
+        }
+        fetchPost();
+      })
+      .catch((error) => {
+        console.error('Napaka pri upvote komentarja:', error);
+      });
+  };
+
+  const handleCommentDownvote = (commentId: string) => {
+    if (!user) {
+      alert('Prijavite se za downvote komentarja.');
+      return;
+    }
+
+    fetch(`http://localhost:3000/comment/downvote/${commentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user._id,
+      }),
+    })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Napaka pri downvote komentarja');
+          }
+          fetchPost();
+        })
+        .catch((error) => {
+          console.error('Napaka pri downvote komentarja:', error);
+        });
+  };
+
   return (
     <Box
       p={8}
@@ -195,8 +256,10 @@ const PostDetail: React.FC = () => {
             <CommentListComponent
                 comments={post.comments}
                 user={user}
+                openAddCommentModal={openCommentModal}
                 handleCommentDelete={handleCommentDelete}
-                openCommentModal={openCommentModal} />
+                handleCommentUpvote={handleCommentUpvote}
+                handleCommentDownvote={handleCommentDownvote} />
           ) : (
             <VStack alignItems="flex-start">
               <Text color="gray.500">

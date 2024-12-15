@@ -1,6 +1,9 @@
-var PostModel = require('../models/PostModel');
-var CommentModel = require('../models/CommentModel');
 const mongoose = require("mongoose");
+
+const PostModel = require('../models/PostModel');
+const CommentModel = require('../models/CommentModel');
+const CommentVoteModel = require('../models/CommentVoteModel');
+const CommentVoteTypes = require("../models/CommentVoteTypes");
 
 /**
  * PostController.js
@@ -51,6 +54,7 @@ module.exports = {
   // Posodobljena metoda za prikaz posamezne objave
   show: function (req, res) {
     var id = req.params.id;
+    var userId = req.query.userId;
 
     PostModel.findOne({ _id: id })
       .populate('userId', 'username')
@@ -74,14 +78,37 @@ module.exports = {
           .populate('userId', 'username')
           .lean()
           .exec(async function (err, comments) {
+
             const topComments = comments.filter(x => x.parentId == null);
 
-            const fetchReplies = (comment) => {
-              comment.replies = comments.filter(y => y.parentId && y.parentId.equals(comment._id));
-              comment.replies.forEach(fetchReplies);
+            const fetchVotes = async (comment) => {
+              const votes = await CommentVoteModel.find({ commentId: comment._id });
+              const upvotes = votes.filter(x => x.type === CommentVoteTypes.UPVOTE).length;
+              const downvotes = votes.filter(x => x.type === CommentVoteTypes.DOWNVOTE).length;
+
+              comment.userVote = 0;
+              if (userId) {
+                const userVote = votes.find(vote => vote.userId.equals(userId));
+                comment.userVote = userVote ? userVote.type : 0
+              }
+
+              comment.votes = upvotes - downvotes;
             };
 
-            topComments.forEach(fetchReplies);
+            const fetchRepliesAndVotes = async (comment) => {
+              comment.replies = comments.filter(y => y.parentId && y.parentId.equals(comment._id));
+              await Promise.all(
+                comment.replies.map(async (reply) => {
+                  await fetchRepliesAndVotes(reply);
+                  await fetchVotes(reply);
+                }));
+              await fetchVotes(comment);
+            };
+
+            await Promise.all(
+                topComments.map(async (topComment) => {
+                  await fetchRepliesAndVotes(topComment);
+                }));
 
             post.comments = topComments;
 

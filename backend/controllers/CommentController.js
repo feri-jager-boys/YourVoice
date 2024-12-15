@@ -1,4 +1,6 @@
 var CommentModel = require('../models/CommentModel');
+var CommentVoteModel = require('../models/CommentVoteModel');
+const CommentVoteTypes = require("../models/CommentVoteTypes");
 
 /**
  * CommentController.js
@@ -53,6 +55,80 @@ module.exports = {
             console.log('Error:', err.message || err);
             return res.status(500).json({
                 message: 'Error when deleting a comment',
+                error: err.message || err,
+            });
+        }
+    },
+
+    upvote: async function (req, res) {
+        const commentId = req.params.id;
+        const userId = req.body.userId;
+
+        try {
+            const existingVote = await CommentVoteModel.findOne({userId: userId, commentId: commentId});
+
+            if (existingVote) {
+                if (existingVote.type === CommentVoteTypes.UPVOTE) {
+                    return res.status(404).json({
+                        message: 'Already voted',
+                    });
+                }
+
+                await CommentVoteModel.findByIdAndUpdate(
+                    existingVote._id,
+                    { type: CommentVoteTypes.UPVOTE });
+
+                return res.status(204).json({});
+            }
+
+            await CommentVoteModel.create({
+                commentId: commentId,
+                userId: userId,
+                type: CommentVoteTypes.UPVOTE,
+            });
+
+            return res.status(204).json({});
+        } catch (err) {
+            console.log('Error:', err.message || err);
+            return res.status(500).json({
+                message: 'Error when upvoting a comment',
+                error: err.message || err,
+            });
+        }
+    },
+
+    downvote: async function (req, res) {
+        const commentId = req.params.id;
+        const userId = req.body.userId;
+
+        try {
+            const existingVote = await CommentVoteModel.findOne({userId: userId, commentId: commentId});
+
+            if (existingVote) {
+                if (existingVote.type === CommentVoteTypes.DOWNVOTE) {
+                    return res.status(404).json({
+                        message: 'Already voted',
+                    });
+                }
+
+                await CommentVoteModel.findByIdAndUpdate(
+                    existingVote._id,
+                    { type: CommentVoteTypes.DOWNVOTE });
+
+                return res.status(204).json({});
+            }
+
+            await CommentVoteModel.create({
+                commentId: commentId,
+                userId: userId,
+                type: CommentVoteTypes.DOWNVOTE,
+            });
+
+            return res.status(204).json({});
+        } catch (err) {
+            console.log('Error:', err.message || err);
+            return res.status(500).json({
+                message: 'Error when downvoting a comment',
                 error: err.message || err,
             });
         }

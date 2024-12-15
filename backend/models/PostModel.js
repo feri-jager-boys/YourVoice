@@ -15,8 +15,6 @@ var PostSchema = new Schema({
     ref: 'forums',
     required: true,
   },
-  upvotes: { type: Number, default: 0 },
-  downvotes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
