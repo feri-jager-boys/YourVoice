@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { publicRoutes, protectedRoutes } from '../routes';
 import { UserContext } from '../userContext';
+import { useColorModeValue, Text } from '@chakra-ui/react';
 
 interface RouteType {
   name: string;
@@ -17,6 +18,9 @@ const Header: React.FC = () => {
   // Nastavimo vidne poti glede na to ali je uporabnik prijavljen ali ne
   const routesToShow = user ? protectedRoutes : publicRoutes;
 
+  // Theming
+  const textColor = useColorModeValue('black', 'white');
+
   return (
     <div className="container">
       <header className="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -24,7 +28,9 @@ const Header: React.FC = () => {
           to="/"
           className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none"
         >
-          <span className="fs-4">Your Voice</span>
+          <Text fontSize="xl" color={textColor} className="fs-4">
+            Your Voice
+          </Text>
         </Link>
 
         <ul className="nav nav-pills">

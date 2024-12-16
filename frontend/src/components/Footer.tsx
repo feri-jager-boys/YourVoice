@@ -1,18 +1,22 @@
 import React from 'react';
 import '../styles.scss';
+import { Text, useColorModeValue } from '@chakra-ui/react';
 
 const Footer: React.FC = () => {
+  const firstTextColor = useColorModeValue('black', 'gray.400');
+  const lastTextColor = useColorModeValue('gray.600', 'gray.500');
+
   return (
     <div className="container">
       <footer className="footer d-flex flex-wrap justify-content-between align-items-start py-3 my-4 border-top">
         <div className="col-md-6 d-flex flex-column align-items-start">
-          <span className="footer-text mb-1">
+          <Text color={firstTextColor} className="footer-text mb-1">
             v0.0.1 Beta © 2024 by Oset, Ternik, Vučetić
-          </span>
-          <span className="footer-text">
+          </Text>
+          <Text color={lastTextColor} className="footer-text">
             Projekt Your Voice, Fakulteta za elektrotehniko, računalništvo in
             informatiko Maribor
-          </span>
+          </Text>
         </div>
 
         <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">

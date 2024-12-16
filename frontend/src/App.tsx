@@ -10,7 +10,11 @@ import { UserContext } from './userContext';
 import Home from './pages/Home'; // Potrdite pravilno pot
 import Posts from './pages/Posts'; // Dodajte direktni import za Posts
 import PostDetail from './components/PostDetail';
-import Forums from "./pages/Forums";
+import Forums from './pages/Forums';
+
+import theme from './theme';
+import { ChakraProvider } from '@chakra-ui/react';
+import ToggleColorMode from './components/ToggleColorMode';
 
 function App() {
   const [user, setUser] = useState<User | null>(
@@ -37,41 +41,46 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <UserContext.Provider value={{ user, setUserContext: updateUserData }}>
-        <Header />
-        <main className="container">
-          <Routes>
-            {/* Stran Home je vedno dostopna */}
-            <Route path="/" element={<Home />} />
-            <Route path="/forums" element={<Forums />} />
+    <ChakraProvider theme={theme}>
+      <BrowserRouter>
+        <UserContext.Provider value={{ user, setUserContext: updateUserData }}>
+          <Header />
+          <main className="container">
+            <Routes>
+              {/* Stran Home je vedno dostopna */}
+              <Route path="/" element={<Home />} />
+              <Route path="/forums" element={<Forums />} />
 
-            {/* Javni Routes - stran Objave vključena za vse */}
-            <Route path="/forums/:forumId" element={<Posts />} />
-            <Route path="/posts/:id" element={<PostDetail />} />
-            {publicRoutes
-              .filter((route) => route.to !== '/' && route.to !== '/posts') // Home in Objave izvzeti
-              .map((route) => (
+              {/* Javni Routes - stran Objave vključena za vse */}
+              <Route path="/forums/:forumId" element={<Posts />} />
+              <Route path="/posts/:id" element={<PostDetail />} />
+              {publicRoutes
+                .filter((route) => route.to !== '/' && route.to !== '/posts') // Home in Objave izvzeti
+                .map((route) => (
+                  <Route
+                    key={route.to}
+                    path={route.to}
+                    element={user ? <Navigate to="/" replace /> : route.element}
+                  />
+                ))}
+
+              {/* Zaščiteni Routes - samo za prijavljene */}
+              {protectedRoutes.map((route) => (
                 <Route
                   key={route.to}
                   path={route.to}
-                  element={user ? <Navigate to="/" replace /> : route.element}
+                  element={
+                    <ProtectedRoute user={user} element={route.element} />
+                  }
                 />
               ))}
-
-            {/* Zaščiteni Routes - samo za prijavljene */}
-            {protectedRoutes.map((route) => (
-              <Route
-                key={route.to}
-                path={route.to}
-                element={<ProtectedRoute user={user} element={route.element} />}
-              />
-            ))}
-          </Routes>
-        </main>
-      </UserContext.Provider>
-      <Footer />
-    </BrowserRouter>
+            </Routes>
+            <ToggleColorMode />
+          </main>
+        </UserContext.Provider>
+        <Footer />
+      </BrowserRouter>
+    </ChakraProvider>
   );
 }
 

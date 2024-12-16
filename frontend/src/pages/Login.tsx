@@ -12,6 +12,7 @@ import {
   Heading,
   useToast,
   Checkbox,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { UserContext, UserContextType } from '../userContext';
 
@@ -64,6 +65,9 @@ const Login: React.FC = () => {
     }
   };
 
+  //Theming
+  const bg = useColorModeValue('white', 'gray.900');
+
   return (
     <Box
       maxW="xl"
@@ -73,7 +77,7 @@ const Login: React.FC = () => {
       borderWidth={1}
       borderRadius="lg"
       boxShadow="2xl"
-      bg="white"
+      bg={bg}
     >
       {userContext.user ? <Navigate replace to="/" /> : null}
 

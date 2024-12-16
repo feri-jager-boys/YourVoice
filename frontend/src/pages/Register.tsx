@@ -10,6 +10,7 @@ import {
   Heading,
   useToast,
   Checkbox,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { UserContext, UserContextType } from '../userContext';
 import { useNavigate } from 'react-router-dom';
@@ -68,6 +69,9 @@ const Register: React.FC = () => {
     }
   };
 
+  //Theming
+  const bg = useColorModeValue('white', 'gray.900');
+
   return (
     <Box
       maxW="lg"
@@ -77,7 +81,7 @@ const Register: React.FC = () => {
       borderWidth={1}
       borderRadius="lg"
       boxShadow="2xl"
-      bg="white"
+      bg={bg}
     >
       <Stack align="center" mb={6}>
         <Heading as="h2" size="lg" color="blue.600">

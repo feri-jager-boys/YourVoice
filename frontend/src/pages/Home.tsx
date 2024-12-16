@@ -1,12 +1,27 @@
-import { Box, Button, Heading, Image, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  Image,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDoorOpen } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 const Home: React.FC = () => {
+  // Theming
+  const bg = useColorModeValue('gray.50', 'gray.700');
+  const textColor = useColorModeValue('gray.700', 'gray.400');
+  const headingColor = useColorModeValue('gray.800', 'gray.200');
+  const buttonBg = useColorModeValue('blue.500', 'blue.300');
+  const buttonHoverBg = useColorModeValue('blue.400', 'blue.500');
+
   return (
-    <Box p={6} bg="gray.50">
+    <Box p={6} bg={bg}>
       <Stack
         direction={{ base: 'column', md: 'row' }}
         spacing={8}
@@ -17,10 +32,10 @@ const Home: React.FC = () => {
       >
         {/* Left Column */}
         <Box flex={1} textAlign={{ base: 'center', md: 'left' }} px={4}>
-          <Heading as="h1" size="xl" mb={4}>
+          <Heading as="h1" size="xl" color={headingColor} mb={4}>
             Forum YourVoice
           </Heading>
-          <Text fontSize="lg" color="gray.700" mb={6}>
+          <Text fontSize="lg" color={textColor} mb={6}>
             YourVoice je interaktivni forum, zasnovan za izmenjavo informacij in
             povezovanje uporabnikov. Aplikacija omogoča prijavljenim
             uporabnikom, da objavljajo svoje vsebine, komentirajo, ocenjujejo
@@ -35,7 +50,7 @@ const Home: React.FC = () => {
           </Text>
 
           <Box textAlign="center" mt={8}>
-            <Heading as="h3" size="md" mb={4}>
+            <Heading as="h3" size="md" mb={4} color={headingColor}>
               Vstop v forum
             </Heading>
             <Button
@@ -45,10 +60,11 @@ const Home: React.FC = () => {
               colorScheme="blue"
               rounded="full"
               px={6}
-              rightIcon={<FontAwesomeIcon icon={faDoorOpen} />}
+              bg={buttonBg}
               _hover={{
-                bg: 'blue.300',
+                bg: buttonHoverBg,
               }}
+              rightIcon={<FontAwesomeIcon icon={faDoorOpen} />}
             >
               Vstopi
             </Button>

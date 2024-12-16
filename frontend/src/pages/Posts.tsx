@@ -7,11 +7,12 @@ import {
   Text,
   Spinner,
   useDisclosure,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
-import {Link, useParams} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const Posts: React.FC = () => {
@@ -23,9 +24,16 @@ const Posts: React.FC = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
+  //Theming
+  const forumHoverBg = useColorModeValue('gray.50', 'gray.700');
+
   const loadPosts = () => {
     setLoading(true);
-    fetch(forumId ? `http://localhost:3000/post/byForum/${forumId}` : "http://localhost:3000/post/")
+    fetch(
+      forumId
+        ? `http://localhost:3000/post/byForum/${forumId}`
+        : 'http://localhost:3000/post/'
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -97,14 +105,15 @@ const Posts: React.FC = () => {
               shadow="md"
               borderWidth="1px"
               borderRadius="lg"
-              _hover={{ bg: 'gray.50' }}
+              _hover={{ bg: forumHoverBg }}
             >
               <Heading fontSize="xl">{post.title}</Heading>
               <Text mt={2} fontSize="md" color="gray.600">
                 Kategorija: {post.category}
               </Text>
               <Text mt={2} fontSize="sm" color="gray.500">
-                Avtor: {post?.userId?.username || 'Neznan uporabnik'} { forumId ? "" : " v forumu " + post.forumId.title }
+                Avtor: {post?.userId?.username || 'Neznan uporabnik'}{' '}
+                {forumId ? '' : ' v forumu ' + post.forumId.title}
               </Text>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>
