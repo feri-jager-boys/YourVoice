@@ -28,8 +28,7 @@ module.exports = {
             });
             var isFlagged = await module.exports.moderateContent(req.body.content);
 
-            if(isFlagged){
-              console.log("comment inappropriate");
+            if (isFlagged.flagged){
               return res.status(200).json({message: "comment flagged inappropriate", code: 1});
             }
 
@@ -162,7 +161,7 @@ module.exports = {
           // Parse the response to check for flagged content
           const scores = response.data.attributeScores;
           const flagged = Object.values(scores).some(
-            (attribute) => attribute.summaryScore.value > 0.7
+            (attribute) => attribute.summaryScore.value > 0.4
           );
       
           return { flagged, scores };
