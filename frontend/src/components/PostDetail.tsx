@@ -18,6 +18,7 @@ import {
   ModalFooter,
   Textarea,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import CommentListComponent from "./CommentListComponent";
@@ -60,6 +61,7 @@ const PostDetail: React.FC = () => {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {user} = useContext(UserContext);
   const navigate = useNavigate();
+  const toast = useToast();
 
   // Ustvarite ref za textarea
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -121,7 +123,17 @@ const PostDetail: React.FC = () => {
         if (!response.ok) {
           throw new Error('Napaka pri dodajanju komentarja');
         }
+        console.log(response);
         return response.json();
+      })
+      .then(data=> {
+        if(data.code === 1){
+          //alert("your comment is inappropriate");
+          toast({
+            title: 'Napaka pri dodajanju objave, vsebina neprimerna',
+            status: 'error',
+          });
+        }
       })
       .then(() => {
         setNewComment(''); // Počistite vnos

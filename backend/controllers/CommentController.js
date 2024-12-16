@@ -1,6 +1,7 @@
 var CommentModel = require('../models/CommentModel');
 var CommentVoteModel = require('../models/CommentVoteModel');
 const CommentVoteTypes = require("../models/CommentVoteTypes");
+const axios = require('axios');
 
 /**
  * CommentController.js
@@ -9,6 +10,7 @@ const CommentVoteTypes = require("../models/CommentVoteTypes");
  * @description :: Server-side logic for managing Comments.
  */
 
+const PERSPECTIVE_API_KEY = "AIzaSyCvBkmGS6i3-OuhHxTb1Vwc1qOBTOiTiSA";
 module.exports = {
     add: async function (req, res) {
         if (!req.body.content || !req.body.userId || !req.body.postId) {
@@ -24,6 +26,12 @@ module.exports = {
                 postId: req.body.postId,
                 parentId: req.body.parentId,
             });
+            var isFlagged = await module.exports.moderateContent(req.body.content);
+
+            if(isFlagged){
+              console.log("comment inappropriate");
+              return res.status(200).json({message: "comment flagged inappropriate", code: 1});
+            }
 
             const comment = await newComment.save();
             console.log('Saved Comment:', comment);
@@ -133,4 +141,34 @@ module.exports = {
             });
         }
     },
+      moderateContent: async function (content) {
+        try {
+          const PERSPECTIVE_API_URL = `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${PERSPECTIVE_API_KEY}`;
+      
+          const requestBody = {
+            comment: { text: content },
+            languages: ["en"], // Replace with "sl" for Slovenian (if applicable)
+            requestedAttributes: {
+              TOXICITY: {},
+              INSULT: {},
+              PROFANITY: {},
+              THREAT: {},
+            },
+          };
+      
+          // Send a request to the Google Perspective API
+          const response = await axios.post(PERSPECTIVE_API_URL, requestBody);
+      
+          // Parse the response to check for flagged content
+          const scores = response.data.attributeScores;
+          const flagged = Object.values(scores).some(
+            (attribute) => attribute.summaryScore.value > 0.7
+          );
+      
+          return { flagged, scores };
+        } catch (error) {
+          console.error("Error in moderateContent function:", error);
+          throw new Error("Content moderation failed.");
+        }
+      },
 };

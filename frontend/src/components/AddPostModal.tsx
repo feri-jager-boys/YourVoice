@@ -38,6 +38,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const [category, setCategory] = useState('');
   const toast = useToast();
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const [isAppropriate, setIsAppropriate] = useState(true);
 
   // Populate fields when post is provided (for editing)
   useEffect(() => {
@@ -80,18 +81,35 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
         }
         return response.json();
       })
+      .then(data => {
+        if(data.code === 1){
+          //alert("your post is inappropriate");
+          setIsAppropriate(false);
+        }
+      })
       .then(() => {
-        toast({
-          title: post
-            ? 'Objava uspešno posodobljena!'
-            : 'Objava uspešno dodana!',
-          status: 'success',
+        setIsAppropriate((prev) => {
+          if(prev){
+            toast({
+              title: post
+                ? 'Objava uspešno posodobljena!'
+                : 'Objava uspešno dodana!',
+              status: 'success',
+            });
+            setTitle('');
+            setContent('');
+            setCategory('');
+            onPostAdded();
+            onClose();
+          }
+          else{
+            toast({
+              title: 'Napaka pri dodajanju objave, vsebina neprimerna',
+              status: 'error',
+            });
+          }
+          return prev;
         });
-        setTitle('');
-        setContent('');
-        setCategory('');
-        onPostAdded();
-        onClose();
       })
       .catch((error) => {
         console.error('Error adding/updating post:', error);
