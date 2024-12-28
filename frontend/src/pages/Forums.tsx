@@ -7,7 +7,7 @@ import {
   Text,
   Spinner,
   useDisclosure,
-  useColorModeValue,
+  useColorModeValue, IconButton,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
@@ -15,6 +15,8 @@ import { Post } from '../interfaces/Post';
 import { Link } from 'react-router-dom';
 import { Forum } from '../interfaces/Forum';
 import AddForumModal from '../components/AddForumModal';
+import { FaArrowUpRightFromSquare, FaTrash } from "react-icons/fa6";
+import { FaEdit } from "react-icons/fa";
 
 const Forums: React.FC = () => {
   const [forums, setForums] = useState<Forum[]>([]);
@@ -51,12 +53,12 @@ const Forums: React.FC = () => {
     setSelectedForum(null); // Reset selected post after adding
   };
 
-  const handleEditPost = (forum: Forum) => {
+  const handleEditForum = (forum: Forum) => {
     setSelectedForum(forum); // Set the selected post for editing
     onOpen(); // Open the modal
   };
 
-  const handleDeletePost = (id: string) => {
+  const handleDeleteForum = (id: string) => {
     fetch(`http://localhost:3000/forum/${id}`, {
       method: 'DELETE',
     })
@@ -94,6 +96,7 @@ const Forums: React.FC = () => {
       ) : (
         <Stack spacing={6}>
           {forums.map((forum) => (
+            <Link to={`/forums/${forum._id}`}>
             <Box
               key={forum._id}
               p={5}
@@ -101,34 +104,59 @@ const Forums: React.FC = () => {
               borderWidth="1px"
               borderRadius="lg"
               _hover={{ bg: forumHoverBg }}
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
             >
-              <Heading fontSize="xl">{forum.title}</Heading>
-              <Text mt={2} fontSize="sm" color="gray.500">
-                Admin: {forum?.adminId?.username || 'Neznan uporabnik'}
-              </Text>
-              <Link to={`/forums/${forum._id}`}>
-                <Button colorScheme="teal" mt={4}>
-                  Poglej objave
-                </Button>
-              </Link>
-              {user && forum.adminId && forum.adminId._id === user._id && (
-                <Box mt={4}>
-                  <Button
-                    colorScheme="green"
-                    mr={3}
-                    onClick={() => handleEditPost(forum)} // Edit post
-                  >
-                    Uredi
-                  </Button>
-                  <Button
-                    colorScheme="red"
-                    onClick={() => handleDeletePost(forum._id)} // Delete post
-                  >
-                    Izbriši
-                  </Button>
-                </Box>
-              )}
+              <Box>
+                <Heading fontSize="xl">{forum.title}</Heading>
+
+                <Text mt={2} mb={0} fontSize="sm" color="gray.500">
+                  Admin: {forum?.adminId?.username || 'Neznan uporabnik'}
+                </Text>
+              </Box>
+
+              <Box>
+                <IconButton
+                    size="xs"
+                    mr={2}
+                    aria-label={'Open forum'}
+                    colorScheme="blue"
+                >
+                  <FaArrowUpRightFromSquare />
+                </IconButton>
+
+                {user && forum.adminId && forum.adminId._id === user._id && (
+                  <Box as="span" mt={4}>
+                    <IconButton
+                        size="xs"
+                        mr={2}
+                        aria-label={'Edit forum'}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleEditForum(forum)}}
+                    >
+                      <FaEdit />
+                    </IconButton>
+                    <IconButton
+                        size="xs"
+                        mr={2}
+                        aria-label={'Delete forum'}
+                        colorScheme="red"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDeleteForum(forum._id)}}
+                    >
+                      <FaTrash />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
             </Box>
+            </Link>
           ))}
         </Stack>
       )}

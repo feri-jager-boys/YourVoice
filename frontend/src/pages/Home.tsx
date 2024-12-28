@@ -1,26 +1,22 @@
 import {
   Box,
-  Button,
   Heading,
   Image,
   Stack,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDoorOpen } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import Posts from "./Posts";
 
 const Home: React.FC = () => {
   // Theming
   const bg = useColorModeValue('gray.50', 'gray.700');
   const textColor = useColorModeValue('gray.700', 'gray.400');
   const headingColor = useColorModeValue('gray.800', 'gray.200');
-  const buttonBg = useColorModeValue('blue.500', 'blue.300');
-  const buttonHoverBg = useColorModeValue('blue.400', 'blue.500');
 
   return (
+    <Box>
     <Box p={6} bg={bg}>
       <Stack
         direction={{ base: 'column', md: 'row' }}
@@ -33,9 +29,9 @@ const Home: React.FC = () => {
         {/* Left Column */}
         <Box flex={1} textAlign={{ base: 'center', md: 'left' }} px={4}>
           <Heading as="h1" size="xl" color={headingColor} mb={4}>
-            Forum YourVoice
+            Dobrodošli doma!
           </Heading>
-          <Text fontSize="lg" color={textColor} mb={6}>
+          <Text fontSize="" color={textColor} mb={6}>
             YourVoice je interaktivni forum, zasnovan za izmenjavo informacij in
             povezovanje uporabnikov. Aplikacija omogoča prijavljenim
             uporabnikom, da objavljajo svoje vsebine, komentirajo, ocenjujejo
@@ -48,27 +44,6 @@ const Home: React.FC = () => {
             ter pravice za moderatorje in administratorje. Za razvoj je
             uporabljen MERN sklad.
           </Text>
-
-          <Box textAlign="center" mt={8}>
-            <Heading as="h3" size="md" mb={4} color={headingColor}>
-              Vstop v forum
-            </Heading>
-            <Button
-              as={RouterLink}
-              to="/forums"
-              size="lg"
-              colorScheme="blue"
-              rounded="full"
-              px={6}
-              bg={buttonBg}
-              _hover={{
-                bg: buttonHoverBg,
-              }}
-              rightIcon={<FontAwesomeIcon icon={faDoorOpen} />}
-            >
-              Vstopi
-            </Button>
-          </Box>
         </Box>
 
         {/* Right Column */}
@@ -77,11 +52,14 @@ const Home: React.FC = () => {
             src="images/default.png"
             alt="YourVoice logo"
             boxSize="100%"
-            maxW="500px"
+            maxW="300px"
             borderRadius="lg"
           />
         </Box>
       </Stack>
+    </Box>
+
+    <Posts></Posts>
     </Box>
   );
 };

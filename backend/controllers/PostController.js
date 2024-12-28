@@ -68,6 +68,7 @@ module.exports = {
 
     PostModel.findOne({ _id: id })
       .populate('userId', 'username')
+      .populate('forumId', 'title')
       .lean()
       .exec(async function (err, post) {
         if (err) {

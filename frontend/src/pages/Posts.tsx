@@ -5,6 +5,7 @@ import {
   Button,
   Heading,
   HStack,
+  IconButton,
   Spinner,
   Stack,
   Text,
@@ -12,13 +13,17 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
+import { FaTrash, FaArrowUpRightFromSquare } from "react-icons/fa6";
+import { FaEdit } from "react-icons/fa";
 
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
+import { Forum } from "../interfaces/Forum";
 
 const Posts: React.FC = () => {
   const { forumId } = useParams<{ forumId: string }>();
+  const [forum, setForum] = useState<Forum | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
@@ -51,7 +56,29 @@ const Posts: React.FC = () => {
       });
   };
 
+  const fetchForum = () => {
+    if (!forumId) {
+      setForum(null);
+      return;
+    }
+
+    fetch(`http://localhost:3000/forum/${forumId}?`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setForum(data);
+      })
+      .catch((error) => {
+        console.error('Napaka pri pridobivanju foruma:', error);
+      });
+  };
+
   useEffect(() => {
+    fetchForum();
     loadPosts();
   }, []);
 
@@ -81,10 +108,17 @@ const Posts: React.FC = () => {
       });
   };
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + ' ...';
+    }
+    return text;
+  };
+
   return (
     <Box p={6} maxW="container.lg" mx="auto">
       <Heading as="h2" size="xl" mb={6} textAlign="center">
-        Forum - Objave
+        {forumId ? forum ? forum.title : "Forum - Objave" : "Najnovejše Objave"}
       </Heading>
       {user && forumId && (
         <Button onClick={onOpen} colorScheme="blue" mb={6}>
@@ -100,6 +134,7 @@ const Posts: React.FC = () => {
       ) : (
         <Stack spacing={6}>
           {posts.map((post) => (
+            <Link to={`/posts/${post._id}`}>
             <Box
               key={post._id}
               p={5}
@@ -107,41 +142,68 @@ const Posts: React.FC = () => {
               borderWidth="1px"
               borderRadius="lg"
               _hover={{ bg: forumHoverBg }}
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              width="100%"
             >
-              <Heading fontSize="xl">{post.title}</Heading>
-              <HStack mt={2} fontSize="md" color="gray.600">
-                <Text>Značke:</Text>
-                {post.tags.map((tag) => (
-                    <Badge mb={4}>{tag.name}</Badge>
-                ))}
-              </HStack>
-              <Text mt={2} fontSize="sm" color="gray.500">
-                Avtor: {post?.userId?.username || 'Neznan uporabnik'}{' '}
-                {forumId ? '' : ' v forumu ' + post.forumId.title}
-              </Text>
-              <Link to={`/posts/${post._id}`}>
-                <Button colorScheme="teal" mt={4}>
-                  Preberi več
-                </Button>
-              </Link>
-              {user && post.userId && post.userId._id === user._id && (
-                <Box mt={4}>
-                  <Button
-                    colorScheme="green"
-                    mr={3}
-                    onClick={() => handleEditPost(post)} // Edit post
-                  >
-                    Uredi
-                  </Button>
-                  <Button
-                    colorScheme="red"
-                    onClick={() => handleDeletePost(post._id)} // Delete post
-                  >
-                    Izbriši
-                  </Button>
-                </Box>
-              )}
+              <Box>
+                <HStack fontSize="xs" color="gray.600">
+                  {post.tags.map((tag) => (
+                      <Badge mb={4}>{tag.name}</Badge>
+                  ))}
+                </HStack>
+
+                <Heading fontSize="2xl">{post.title}</Heading>
+
+                <Text color="gray.500" fontSize="sm" fontStyle="italic">{truncateText(post.content, 100)}</Text>
+
+                <Text mt={2} mb={0} fontSize="xs" color="gray.500">
+                  {forumId ? '' : <>Forum: {post.forumId.title} | </>}
+                  Avtor: {post?.userId?.username || 'Neznan uporabnik'}{' '}
+                  - {FormatDate(post.createdAt)}
+                </Text>
+              </Box>
+
+              <Box>
+                <IconButton
+                  size="xs"
+                  mr={2}
+                  aria-label={'Open post'}
+                  colorScheme="blue"
+                >
+                  <FaArrowUpRightFromSquare />
+                </IconButton>
+                {user && post.userId && post.userId._id === user._id && (
+                  <Box as="span" mt={4}>
+                    <IconButton
+                      size="xs"
+                      mr={2}
+                      aria-label={'Edit post'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleEditPost(post)}}
+                    >
+                      <FaEdit />
+                    </IconButton>
+                    <IconButton
+                      size="xs"
+                      mr={2}
+                      aria-label={'Delete post'}
+                      colorScheme="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDeletePost(post._id)}}
+                    >
+                      <FaTrash />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
             </Box>
+            </Link>
           ))}
         </Stack>
       )}
@@ -158,5 +220,18 @@ const Posts: React.FC = () => {
     </Box>
   );
 };
+
+export const FormatDate = (date: string) => {
+  return new Intl.DateTimeFormat(
+    "sl-SI", {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false})
+    .format(new Date(date));
+}
 
 export default Posts;

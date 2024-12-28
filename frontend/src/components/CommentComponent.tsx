@@ -6,6 +6,7 @@ import { CommentApiResponse, CommentVoteTypes } from './PostDetail';
 import { User } from '../interfaces/User';
 import CommentListComponent from './CommentListComponent';
 import { FaDownLong, FaUpLong } from 'react-icons/fa6';
+import { FormatDate } from "../pages/Posts";
 
 interface CommentProps {
   comment: CommentApiResponse;
@@ -49,7 +50,7 @@ const CommentComponent: React.FC<CommentProps> = ({
         <Box>
           <Text fontSize="sm" color={usernameColor}>
             {comment.userId.username} -{' '}
-            {new Date(comment.createdAt).toLocaleString()}
+            {FormatDate(comment.createdAt)}
           </Text>
           <Text color={commentTextColor}>{comment.content}</Text>
         </Box>
@@ -61,6 +62,7 @@ const CommentComponent: React.FC<CommentProps> = ({
               mr={2}
               aria-label={'Delete comment'}
               onClick={() => handleCommentDelete(comment._id)}
+              colorScheme="red"
             >
               <FaTrash />
             </IconButton>

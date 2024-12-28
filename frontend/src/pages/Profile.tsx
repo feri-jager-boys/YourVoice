@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { Box, Heading, Text, Button, Stack } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import { useNavigate } from 'react-router-dom';
+import { FormatDate } from "./Posts";
 
 const Profile: React.FC = () => {
   const { user } = useContext(UserContext);
@@ -42,16 +43,13 @@ const Profile: React.FC = () => {
         </Box>
         <Box>
           <Text fontSize="lg" fontWeight="bold">
-            Datum registracije:
+            Čas registracije:
           </Text>
           <Text fontSize="md">
-            {new Date(user.createdAt).toLocaleDateString()}
+            {FormatDate(user.createdAt)}
           </Text>
         </Box>
       </Stack>
-      <Button mt={6} colorScheme="teal" onClick={() => navigate('/')}>
-        Domov
-      </Button>
     </Box>
   );
 };

@@ -27,6 +27,8 @@ import {
 import { UserContext } from '../userContext';
 import CommentListComponent from './CommentListComponent';
 import { Tag } from "../interfaces/Tag";
+import { FormatDate } from "../pages/Posts";
+import { Forum } from "../interfaces/Forum";
 
 interface UserApiResponse {
   username: string;
@@ -55,6 +57,7 @@ interface PostApiResponse {
   createdAt: string;
   userId?: UserApiResponse;
   comments: CommentApiResponse[];
+  forumId: Forum;
 }
 
 const PostDetail: React.FC = () => {
@@ -241,8 +244,8 @@ const PostDetail: React.FC = () => {
       borderRadius="lg"
       shadow="lg"
     >
-      <Button onClick={() => navigate('/posts')} colorScheme="teal" mb={6}>
-        Nazaj na objave
+      <Button onClick={() => navigate(-1)} mb={6}>
+        Nazaj
       </Button>
       {loading ? (
         <Spinner size="xl" />
@@ -257,37 +260,36 @@ const PostDetail: React.FC = () => {
           >
             {post.title}
           </Heading>
-          <Divider mb={4} />
-          <Flex
-            justify="space-between"
-            color={contentInfoColor}
-            fontSize="sm"
-            mb={6}
-          >
-            <HStack>
-              <Text>Značke:</Text>
-              {post.tags.map((tag) => (
-                  <Badge mb={4}>{tag.name}</Badge>
-              ))}
-            </HStack>
-            <Text>
-              Datum: <b>{new Date(post.createdAt).toLocaleDateString()}</b>
-            </Text>
-          </Flex>
-          <Text color={contentInfoColor} fontSize="sm" mb={4}>
-            Avtor:{' '}
-            <strong>{post.userId?.username || 'Neznan uporabnik'}</strong>
-          </Text>
-          <Text fontSize="md" lineHeight="tall" mt={4} color={contentColor}>
+          <Divider my={6} />
+          <HStack>
+            <Text fontSize="sm">Značke:</Text>
+            {post.tags.map((tag) => (
+                <Badge mb={4}>{tag.name}</Badge>
+            ))}
+          </HStack>
+          <Text fontSize="md" lineHeight="tall" mt={2} mb={2} color={contentColor}>
             {post.content}
           </Text>
+          <Flex
+              justify="space-between"
+              color={contentInfoColor}
+              fontSize="sm"
+              mt={2}
+          >
+            <Text color={contentInfoColor} fontSize="xs" mb={0}>
+              Forum: {post.forumId.title}
+            </Text>
+            <Text fontSize="xs" mb={0}>
+              Avtor: {post.userId?.username || 'Neznan uporabnik'} - {FormatDate(post.createdAt)}
+            </Text>
+          </Flex>
           <Divider my={6} />
           <Heading as="h3" size="md" mb={4}>
             Komentarji
           </Heading>
 
           <Button
-            colorScheme="teal"
+            colorScheme="blue"
             mb={4}
             onClick={() => openCommentModal(null)}
           >
