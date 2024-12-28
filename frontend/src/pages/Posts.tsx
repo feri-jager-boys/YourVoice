@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
+  Badge,
   Box,
-  Heading,
   Button,
+  Heading,
+  HStack,
+  Spinner,
   Stack,
   Text,
-  Spinner,
-  useDisclosure,
   useColorModeValue,
+  useDisclosure,
 } from '@chakra-ui/react';
+import { Link, useParams } from 'react-router-dom';
+
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
-import { Link, useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
 const Posts: React.FC = () => {
   const { forumId } = useParams<{ forumId: string }>();
@@ -22,7 +24,6 @@ const Posts: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useContext(UserContext);
-  const navigate = useNavigate();
 
   //Theming
   const forumHoverBg = useColorModeValue('gray.50', 'gray.700');
@@ -85,7 +86,7 @@ const Posts: React.FC = () => {
       <Heading as="h2" size="xl" mb={6} textAlign="center">
         Forum - Objave
       </Heading>
-      {user && (
+      {user && forumId && (
         <Button onClick={onOpen} colorScheme="blue" mb={6}>
           Dodaj novo objavo
         </Button>
@@ -108,9 +109,12 @@ const Posts: React.FC = () => {
               _hover={{ bg: forumHoverBg }}
             >
               <Heading fontSize="xl">{post.title}</Heading>
-              <Text mt={2} fontSize="md" color="gray.600">
-                Kategorija: {post.category}
-              </Text>
+              <HStack mt={2} fontSize="md" color="gray.600">
+                <Text>Značke:</Text>
+                {post.tags.map((tag) => (
+                    <Badge mb={4}>{tag.name}</Badge>
+                ))}
+              </HStack>
               <Text mt={2} fontSize="sm" color="gray.500">
                 Avtor: {post?.userId?.username || 'Neznan uporabnik'}{' '}
                 {forumId ? '' : ' v forumu ' + post.forumId.title}

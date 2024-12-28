@@ -15,8 +15,11 @@ import {
   Textarea,
   useToast,
 } from '@chakra-ui/react';
+import { ActionMeta, MultiValue, Select } from "chakra-react-select";
+
 import { UserContext } from '../userContext';
 import { Post } from '../interfaces/Post';
+import { Tag } from "../interfaces/Tag";
 
 interface AddPostModalProps {
   isOpen: boolean;
@@ -24,6 +27,16 @@ interface AddPostModalProps {
   onPostAdded: () => void;
   post: Post | null;
   forumId?: string;
+}
+
+export class Option {
+  value: string;
+  label: string;
+
+  constructor(value: string, label: string) {
+    this.value = value;
+    this.label = label;
+  }
 }
 
 const AddPostModal: React.FC<AddPostModalProps> = ({
@@ -35,7 +48,8 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const { user } = useContext(UserContext); // Get the currently logged-in user
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
+  const [allTags, setAllTags] = useState<Array<Tag>>([]);
+  const [selectedTags, setSelectedTags] = useState<MultiValue<Option>>([]);
   const toast = useToast();
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [isAppropriate, setIsAppropriate] = useState(true);
@@ -45,11 +59,14 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
     if (post) {
       setTitle(post.title);
       setContent(post.content);
-      setCategory(post.category);
+      setSelectedTags(post.tags.map((tag) => { return new Option(tag._id!, tag.name) }));
     } else {
       setTitle('');
       setContent('');
-      setCategory('');
+      setSelectedTags([]);
+    }
+    if (forumId || post) {
+      fetchTags();
     }
   }, [post]);
 
@@ -68,9 +85,9 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       method: method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title,
-        content,
-        category,
+        title: title,
+        content: content,
+        tags: selectedTags.map((tag) => new Tag(tag.value, tag.label)),
         userId: user._id, // Include userId
         forumId: forumId, // Include forumId
       }),
@@ -98,7 +115,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
             });
             setTitle('');
             setContent('');
-            setCategory('');
+            setSelectedTags([]);
             onPostAdded();
             onClose();
           }
@@ -119,6 +136,31 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
         });
       });
   };
+
+  const fetchTags = () => {
+    let forumIdForTags = forumId;
+    if (forumIdForTags == undefined) {
+      forumIdForTags = post?.forumId._id;
+    }
+
+    fetch(`http://localhost:3000/forum/tags/${forumIdForTags}?`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setAllTags(data);
+        })
+        .catch((error) => {
+          console.error('Napaka pri pridobivanju značk:', error);
+        });
+  };
+
+  const handleSelectChange = ((newValue: MultiValue<Option>, _: ActionMeta<Option>) => {
+    setSelectedTags(newValue);
+  });
 
   return (
     <Modal
@@ -141,11 +183,13 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
             />
           </FormControl>
           <FormControl mb={4}>
-            <FormLabel>Kategorija</FormLabel>
-            <Input
-              placeholder="Vnesite kategorijo"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+            <FormLabel>Značke</FormLabel>
+            <Select
+              closeMenuOnSelect={false}
+              isMulti
+              options={allTags.map((tag) => { return new Option(tag._id!, tag.name) })}
+              value={selectedTags}
+              onChange={handleSelectChange}
             />
           </FormControl>
           <FormControl mb={4}>

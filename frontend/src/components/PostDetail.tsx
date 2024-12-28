@@ -20,9 +20,13 @@ import {
   useDisclosure,
   useToast,
   useColorModeValue,
+  HStack,
+  Badge,
 } from '@chakra-ui/react';
+
 import { UserContext } from '../userContext';
 import CommentListComponent from './CommentListComponent';
+import { Tag } from "../interfaces/Tag";
 
 interface UserApiResponse {
   username: string;
@@ -47,7 +51,7 @@ export interface CommentApiResponse {
 interface PostApiResponse {
   title: string;
   content: string;
-  category: string;
+  tags: Tag[];
   createdAt: string;
   userId?: UserApiResponse;
   comments: CommentApiResponse[];
@@ -260,9 +264,12 @@ const PostDetail: React.FC = () => {
             fontSize="sm"
             mb={6}
           >
-            <Text>
-              Kategorija: <strong>{post.category}</strong>
-            </Text>
+            <HStack>
+              <Text>Značke:</Text>
+              {post.tags.map((tag) => (
+                  <Badge mb={4}>{tag.name}</Badge>
+              ))}
+            </HStack>
             <Text>
               Datum: <b>{new Date(post.createdAt).toLocaleDateString()}</b>
             </Text>

@@ -4,9 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { Steps } from 'chakra-ui-steps';
 
-const theme = extendTheme({ components: { Steps } });
+const theme = extendTheme({ components: { } });
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

@@ -14,6 +14,8 @@ function requiresLogin(req, res, next){
 
 router.get('/', ForumController.list);
 
+router.get('/tags/:id', ForumController.getTagsByForum);
+
 router.get('/:id', ForumController.show);
 
 router.post('/', ForumController.create);
