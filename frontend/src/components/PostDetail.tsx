@@ -71,6 +71,11 @@ const PostDetail: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const ws = useRef<WebSocket | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState<string | null>(null);
+
+
   // Ustvarite ref za textarea
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -98,13 +103,91 @@ const PostDetail: React.FC = () => {
       });
   };
 
+  /**
+   * WebSocket Client setup.
+   */
+  const initializeWebSocket = () => {
+    if (ws.current) return;
+
+    const url = "ws://localhost:3000" // Websocket Server URL
+    ws.current = new WebSocket(url);
+
+    // Initial connection
+    ws.current.onopen = () => {
+      console.log('WebSocket connection established');
+      ws.current!.send(JSON.stringify({
+        type: 'client_connected',
+        postId: id
+      }));
+    };
+
+    handleWSMessages();
+    handleWSError(); 
+  }
+
+  const handleWSMessages = () => {
+    if (!ws.current) return;
+
+    ws.current.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        if (message.type === 'typing' && message.postId === id) {
+          setTypingUser(message.user);
+          setIsTyping(true);
+          setTimeout(() => setIsTyping(false), 2000);
+        }
+      } catch(error) {
+        console.error("WebSocket Error recieving message");
+      }
+    };
+  }
+
+  const handleWSError = () => {
+    if (ws.current) {      
+      ws.current.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+      };
+    }
+  }
+
+  const WSConnectionClose = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({
+        type: 'client_close',
+        postId: id
+      }));
+      console.log("WebSocket connection closed.");
+      ws.current.close();
+    }
+  };
+
   useEffect(() => {
-    fetchPost(); // Inicialno naložite podatke o objavi
+    fetchPost();
+    initializeWebSocket();
+
+    return () => {
+      WSConnectionClose();
+    };
   }, [id]);
 
   const openCommentModal = (parentCommentId: string | null) => {
     setParentComment(parentCommentId);
     onOpen();
+  };
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewComment(e.target.value);
+    
+    // Send typing notification with WebSocket
+    if (ws.current && newComment.length > 0) {
+      ws.current.send(
+        JSON.stringify({
+          type: 'typing',
+          user: user?.username ?? "anonymous",
+          postId: id,
+        })
+      );
+    }
   };
 
   const handleCommentSubmit = () => {
@@ -284,9 +367,16 @@ const PostDetail: React.FC = () => {
             </Text>
           </Flex>
           <Divider my={6} />
-          <Heading as="h3" size="md" mb={4}>
-            Komentarji
-          </Heading>
+          <HStack>
+            <Heading as="h3" size="md" mb={4}>
+              Komentarji
+            </Heading>
+            {isTyping && typingUser && (
+              <Text color="gray.500" fontStyle="italic">
+                {typingUser} is typing...
+              </Text>
+            )}
+          </HStack>
 
           <Button
             colorScheme="blue"
@@ -327,7 +417,7 @@ const PostDetail: React.FC = () => {
                   ref={textareaRef} // Povezava referenc
                   placeholder="Vnesite svoj komentar..."
                   value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
+                  onChange={handleCommentChange}
                 />
               </ModalBody>
               <ModalFooter>
