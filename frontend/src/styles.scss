@@ -24,3 +24,17 @@
   color: #007bff;
   text-decoration: underline;
 }
+
+code {
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  overflow-x: auto;
+}

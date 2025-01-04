@@ -21,6 +21,7 @@ module.exports = {
 
         try {
             const content = await module.exports.generateHTML(req.body.content);
+            console.log(content)
             const newComment = new CommentModel({
                 content,
                 userId: req.body.userId,
@@ -175,7 +176,12 @@ module.exports = {
     generateHTML: async function (content) {
         const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
         const imagePattern = /!\[([^\]]+)\]\(([^)]+)\)/g;
+        const blockCodePattern = /```([^`]+)```/gs;
 
-        return content.replace(imagePattern, '<img src="$2" alt="$1">').replace(linkPattern, '<a class="user-provided-link" href="$2">$1</a>');
+        return content
+            .replace(imagePattern, '<img src="$2" alt="$1">')
+            .replace(linkPattern, '<a class="user-provided-link" href="$2">$1</a>')
+            .replace(blockCodePattern, '<pre><code>$1</code></pre>');
     }
+
 };
