@@ -29,6 +29,7 @@ import CommentListComponent from './CommentListComponent';
 import { Tag } from "../interfaces/Tag";
 import { FormatDate } from "../pages/Posts";
 import { Forum } from "../interfaces/Forum";
+import { FaLink, FaImage, FaCode } from "react-icons/fa";
 
 interface UserApiResponse {
   username: string;
@@ -318,6 +319,18 @@ const PostDetail: React.FC = () => {
   const contentInfoColor = useColorModeValue('gray.500', 'gray.400');
   const contentColor = useColorModeValue('gray.700', 'gray.200');
 
+  const handleAddHyperlink = () => {
+    setNewComment((prev) => `${prev}[Povezava](URL)`);
+  };
+
+  const handleAddImage = () => {
+    setNewComment((prev) => `${prev}![Opis slike](URL)`);
+  };
+
+  const handleAddCodeBlock = () => {
+    setNewComment((prev) => `${prev}\`\`\`\n// Vaša koda tukaj\n\`\`\``);
+  };
+
   return (
     <Box
       p={8}
@@ -404,20 +417,33 @@ const PostDetail: React.FC = () => {
           )}
 
           <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            initialFocusRef={textareaRef}
+              isOpen={isOpen}
+              onClose={onClose}
+              initialFocusRef={textareaRef}
           >
             <ModalOverlay />
-            <ModalContent>
+            <ModalContent maxW="800px" maxH="600px">
               <ModalHeader>Dodaj komentar</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
+                <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                  <Button colorScheme="blue" onClick={handleAddHyperlink} size="sm">
+                    <FaLink />
+                  </Button>
+                  <Button colorScheme="green" onClick={handleAddImage} size="sm">
+                    <FaImage />
+                  </Button>
+                  <Button colorScheme="purple" onClick={handleAddCodeBlock} size="sm">
+                    <FaCode />
+                  </Button>
+                </div>
+
+                {/* Textarea */}
                 <Textarea
-                  ref={textareaRef} // Povezava referenc
-                  placeholder="Vnesite svoj komentar..."
-                  value={newComment}
-                  onChange={handleCommentChange}
+                    ref={textareaRef}
+                    placeholder="Vnesite svoj komentar..."
+                    value={newComment}
+                    onChange={handleCommentChange}
                 />
               </ModalBody>
               <ModalFooter>

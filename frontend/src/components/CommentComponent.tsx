@@ -49,10 +49,13 @@ const CommentComponent: React.FC<CommentProps> = ({
       >
         <Box>
           <Text fontSize="sm" color={usernameColor}>
-            {comment.userId.username} -{' '}
-            {FormatDate(comment.createdAt)}
+            {comment.userId.username} - {FormatDate(comment.createdAt)}
           </Text>
-          <Text color={commentTextColor}>{comment.content}</Text>
+          <Text
+              color={commentTextColor}
+              dangerouslySetInnerHTML={{ __html: comment.content }}
+              // TODO sanitize input
+          />
         </Box>
 
         <Box>
