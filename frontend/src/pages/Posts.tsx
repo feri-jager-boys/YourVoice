@@ -167,7 +167,7 @@ const Posts: React.FC = () => {
 
               <Box>
                 <IconButton
-                  size="xs"
+                  size="sm"
                   mr={2}
                   aria-label={'Open post'}
                   colorScheme="blue"
@@ -177,7 +177,8 @@ const Posts: React.FC = () => {
                 {user && post.userId && post.userId._id === user._id && (
                   <Box as="span" mt={4}>
                     <IconButton
-                      size="xs"
+                      size="sm"
+                      colorScheme="yellow"
                       mr={2}
                       aria-label={'Edit post'}
                       onClick={(e) => {
@@ -188,7 +189,7 @@ const Posts: React.FC = () => {
                       <FaEdit />
                     </IconButton>
                     <IconButton
-                      size="xs"
+                      size="sm"
                       mr={2}
                       aria-label={'Delete post'}
                       colorScheme="red"

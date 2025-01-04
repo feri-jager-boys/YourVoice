@@ -13,13 +13,14 @@ import {
   FormLabel,
   Input,
   Textarea,
-  useToast,
+  useToast, Tooltip,
 } from '@chakra-ui/react';
 import { ActionMeta, MultiValue, Select } from "chakra-react-select";
 
 import { UserContext } from '../userContext';
 import { Post } from '../interfaces/Post';
 import { Tag } from "../interfaces/Tag";
+import {FaBold, FaCode, FaImage, FaItalic, FaLink} from "react-icons/fa";
 
 interface AddPostModalProps {
   isOpen: boolean;
@@ -161,6 +162,27 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const handleSelectChange = ((newValue: MultiValue<Option>, _: ActionMeta<Option>) => {
     setSelectedTags(newValue);
   });
+  const handleAddHyperlink = () => {
+    setContent((prev) => `${prev}[Povezava](URL)`);
+  };
+
+  const handleAddImage = () => {
+    setContent((prev) => `${prev}![Opis slike](URL)`);
+  };
+
+  const handleAddCodeBlock = () => {
+    setContent((prev) => `${prev}\`\`\`\n// Vaša koda tukaj\n\`\`\``);
+  };
+
+  const handleAddBold = () => {
+    setContent((prev) => `${prev}**Bold Text**`);
+  };
+
+  const handleAddItalic = () => {
+    setContent((prev) => `${prev}*Italic Text*`);
+  };
+
+
 
   return (
     <Modal
@@ -169,7 +191,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       initialFocusRef={titleInputRef} // Set focus on the first input field
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="800px" maxH="600px" minH="400px">
         <ModalHeader>{post ? 'Uredi objavo' : 'Dodaj novo objavo'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
@@ -192,12 +214,46 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
               onChange={handleSelectChange}
             />
           </FormControl>
+          <FormLabel>Vsebina</FormLabel>
+
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            <Tooltip label="Krepko" aria-label="Krepko">
+              <Button colorScheme="yellow" onClick={handleAddBold} size="sm">
+                <FaBold />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="Poševno" aria-label="Poševno">
+              <Button colorScheme="orange" onClick={handleAddItalic} size="sm">
+                <FaItalic />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="Povezava" aria-label="Povezava">
+              <Button colorScheme="blue" onClick={handleAddHyperlink} size="sm">
+                <FaLink />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="Slika" aria-label="Slika">
+              <Button colorScheme="green" onClick={handleAddImage} size="sm">
+                <FaImage />
+              </Button>
+            </Tooltip>
+
+            <Tooltip label="Koda" aria-label="Koda">
+              <Button colorScheme="purple" onClick={handleAddCodeBlock} size="sm">
+                <FaCode />
+              </Button>
+            </Tooltip>
+          </div>
           <FormControl mb={4}>
-            <FormLabel>Vsebina</FormLabel>
             <Textarea
               placeholder="Vnesite vsebino"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              h="150px"
+              resize="both"
             />
           </FormControl>
         </ModalBody>

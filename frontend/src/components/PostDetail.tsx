@@ -31,6 +31,7 @@ import { Tag } from "../interfaces/Tag";
 import { FormatDate } from "../pages/Posts";
 import { Forum } from "../interfaces/Forum";
 import { FaLink, FaImage, FaCode, FaBold, FaItalic } from 'react-icons/fa';
+import {generateHTML} from "../services/textService";
 
 interface UserApiResponse {
   username: string;
@@ -372,8 +373,12 @@ const PostDetail: React.FC = () => {
                 <Badge mb={4}>{tag.name}</Badge>
             ))}
           </HStack>
-          <Text fontSize="md" lineHeight="tall" mt={2} mb={2} color={contentColor}>
-            {post.content}
+          <Text fontSize="md"
+                lineHeight="tall"
+                mt={2}
+                mb={2}
+                color={contentColor}
+                dangerouslySetInnerHTML={{ __html: generateHTML(post.content) }}>
           </Text>
           <Flex
               justify="space-between"
