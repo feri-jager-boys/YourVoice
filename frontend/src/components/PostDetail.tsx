@@ -22,6 +22,7 @@ import {
   useColorModeValue,
   HStack,
   Badge,
+  Tooltip
 } from '@chakra-ui/react';
 
 import { UserContext } from '../userContext';
@@ -29,7 +30,7 @@ import CommentListComponent from './CommentListComponent';
 import { Tag } from "../interfaces/Tag";
 import { FormatDate } from "../pages/Posts";
 import { Forum } from "../interfaces/Forum";
-import { FaLink, FaImage, FaCode } from "react-icons/fa";
+import { FaLink, FaImage, FaCode, FaBold, FaItalic } from 'react-icons/fa';
 
 interface UserApiResponse {
   username: string;
@@ -331,10 +332,18 @@ const PostDetail: React.FC = () => {
     setNewComment((prev) => `${prev}\`\`\`\n// Vaša koda tukaj\n\`\`\``);
   };
 
+  const handleAddBold = () => {
+    setNewComment((prev) => `${prev}**Bold Text**`);
+  };
+
+  const handleAddItalic = () => {
+    setNewComment((prev) => `${prev}*Italic Text*`);
+  };
+
   return (
     <Box
       p={8}
-      maxW="container.md"
+      maxW="container.lg"
       mx="auto"
       borderWidth="1px"
       borderRadius="lg"
@@ -416,34 +425,51 @@ const PostDetail: React.FC = () => {
             </VStack>
           )}
 
-          <Modal
-              isOpen={isOpen}
-              onClose={onClose}
-              initialFocusRef={textareaRef}
-          >
+          <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={textareaRef}>
             <ModalOverlay />
-            <ModalContent maxW="800px" maxH="600px">
+            <ModalContent maxW="800px" maxH="600px" minH="300px">
               <ModalHeader>Dodaj komentar</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-                  <Button colorScheme="blue" onClick={handleAddHyperlink} size="sm">
-                    <FaLink />
-                  </Button>
-                  <Button colorScheme="green" onClick={handleAddImage} size="sm">
-                    <FaImage />
-                  </Button>
-                  <Button colorScheme="purple" onClick={handleAddCodeBlock} size="sm">
-                    <FaCode />
-                  </Button>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                  <Tooltip label="Krepko" aria-label="Krepko">
+                    <Button colorScheme="yellow" onClick={handleAddBold} size="sm">
+                      <FaBold />
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip label="Poševno" aria-label="Poševno">
+                    <Button colorScheme="orange" onClick={handleAddItalic} size="sm">
+                      <FaItalic />
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip label="Povezava" aria-label="Povezava">
+                    <Button colorScheme="blue" onClick={handleAddHyperlink} size="sm">
+                      <FaLink />
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip label="Slika" aria-label="Slika">
+                    <Button colorScheme="green" onClick={handleAddImage} size="sm">
+                      <FaImage />
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip label="Koda" aria-label="Koda">
+                    <Button colorScheme="purple" onClick={handleAddCodeBlock} size="sm">
+                      <FaCode />
+                    </Button>
+                  </Tooltip>
                 </div>
 
-                {/* Textarea */}
                 <Textarea
                     ref={textareaRef}
                     placeholder="Vnesite svoj komentar..."
                     value={newComment}
                     onChange={handleCommentChange}
+                    h="200px"
+                    resize="both"
                 />
               </ModalBody>
               <ModalFooter>

@@ -1,6 +1,5 @@
 import React from "react";
 import { VStack } from "@chakra-ui/react";
-
 import CommentComponent from "./CommentComponent";
 import { CommentApiResponse } from "./PostDetail";
 import { User } from "../interfaces/User";

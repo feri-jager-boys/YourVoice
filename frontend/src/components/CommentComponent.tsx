@@ -1,12 +1,13 @@
 import React from 'react';
-import { Box, IconButton, Text, useColorModeValue } from '@chakra-ui/react';
-import { FaReply, FaTrash } from 'react-icons/fa';
+import { Box, Flex, IconButton, Text, useColorModeValue } from '@chakra-ui/react';
+import {FaEdit, FaReply, FaTrash} from 'react-icons/fa';
 
 import { CommentApiResponse, CommentVoteTypes } from './PostDetail';
 import { User } from '../interfaces/User';
 import CommentListComponent from './CommentListComponent';
 import { FaDownLong, FaUpLong } from 'react-icons/fa6';
 import { FormatDate } from "../pages/Posts";
+import {generateHTML} from "../services/textService";
 
 interface CommentProps {
   comment: CommentApiResponse;
@@ -52,69 +53,81 @@ const CommentComponent: React.FC<CommentProps> = ({
             {comment.userId.username} - {FormatDate(comment.createdAt)}
           </Text>
           <Text
+              maxW="90%"
               color={commentTextColor}
-              dangerouslySetInnerHTML={{ __html: comment.content }}
-              // TODO sanitize input
+              dangerouslySetInnerHTML={{ __html: generateHTML(comment.content) }}
           />
         </Box>
 
-        <Box>
-          {user?._id === comment.userId._id && (
-            <IconButton
-              size="xs"
-              mr={2}
-              aria-label={'Delete comment'}
-              onClick={() => handleCommentDelete(comment._id)}
-              colorScheme="red"
-            >
-              <FaTrash />
-            </IconButton>
-          )}
-          <IconButton
-            size="xs"
-            mr={2}
-            aria-label={'Add comment'}
-            onClick={() => openAddCommentModal(comment._id)}
-          >
-            <FaReply />
-          </IconButton>
-          <IconButton
-            size="xs"
-            mr={1}
-            ml={1}
-            aria-label={'Upvote comment'}
-            colorScheme={
-              comment.userVote === CommentVoteTypes.UPVOTE ? 'green' : undefined
-            }
-            onClick={() => handleCommentUpvote(comment._id)}
-          >
-            <FaUpLong />
-          </IconButton>
-          <Text
-            as="span"
-            display="inline-block"
-            mr={1}
-            ml={1}
-            fontSize="sm"
-            width={'15px'}
-            textAlign={'center'}
-            color={getVoteColor(Number(comment.votes))}
-          >
-            {comment.votes.toString()}
-          </Text>
-          <IconButton
-            size="xs"
-            mr={1}
-            ml={1}
-            aria-label={'Downvote comment'}
-            colorScheme={
-              comment.userVote === CommentVoteTypes.DOWNVOTE ? 'red' : undefined
-            }
-            onClick={() => handleCommentDownvote(comment._id)}
-          >
-            <FaDownLong />
-          </IconButton>
-        </Box>
+          <Box>
+              {user?._id === comment.userId._id && (
+                  <Flex mb={2} justifyContent="center">
+                      <IconButton
+                          size="sm"
+                          mr={2}
+                          aria-label={'Edit comment'}
+                          onClick={() => handleCommentDelete(comment._id)}
+                          colorScheme="yellow"
+                      >
+                          <FaEdit />
+                      </IconButton>
+                      <IconButton
+                          size="sm"
+                          mr={2}
+                          aria-label={'Delete comment'}
+                          onClick={() => handleCommentDelete(comment._id)}
+                          colorScheme="red"
+                      >
+                          <FaTrash />
+                      </IconButton>
+                  </Flex>
+              )}
+
+              <Flex>
+                  <IconButton
+                      size="sm"
+                      mr={2}
+                      aria-label={'Add comment'}
+                      onClick={() => openAddCommentModal(comment._id)}
+                      colorScheme="blue"
+                  >
+                      <FaReply />
+                  </IconButton>
+                  <IconButton
+                      size="sm"
+                      mr={2}
+                      ml={1}
+                      aria-label={'Upvote comment'}
+                      colorScheme={comment.userVote === CommentVoteTypes.UPVOTE ? 'green' : undefined}
+                      onClick={() => handleCommentUpvote(comment._id)}
+                  >
+                      <FaUpLong />
+                  </IconButton>
+                  <Text
+                      as="span"
+                      display="inline-block"
+                      mr={2}
+                      ml={2}
+                      fontSize="sm"
+                      width={'20px'}
+                      textAlign={'center'}
+                      marginTop={'4px'}
+                      color={getVoteColor(Number(comment.votes))}
+                  >
+                      {comment.votes.toString()}
+                  </Text>
+                  <IconButton
+                      size="sm"
+                      mr={2}
+                      ml={1}
+                      aria-label={'Downvote comment'}
+                      colorScheme={comment.userVote === CommentVoteTypes.DOWNVOTE ? 'red' : undefined}
+                      onClick={() => handleCommentDownvote(comment._id)}
+                  >
+                      <FaDownLong />
+                  </IconButton>
+              </Flex>
+          </Box>
       </Box>
 
       <Box mt={2}>
