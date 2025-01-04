@@ -48,12 +48,11 @@ const CommentComponent: React.FC<CommentProps> = ({
         alignItems="center"
         width="100%"
       >
-        <Box>
+        <Box maxW="80%">
           <Text fontSize="sm" color={usernameColor}>
             {comment.userId.username} - {FormatDate(comment.createdAt)}
           </Text>
           <Text
-              maxW="90%"
               color={commentTextColor}
               dangerouslySetInnerHTML={{ __html: generateHTML(comment.content) }}
           />
