@@ -32,6 +32,7 @@ import { FormatDate } from "../pages/Posts";
 import { Forum } from "../interfaces/Forum";
 import { FaLink, FaImage, FaCode, FaBold, FaItalic } from 'react-icons/fa';
 import {generateHTML} from "../services/textService";
+import { FaEye } from 'react-icons/fa6';
 
 interface UserApiResponse {
   username: string;
@@ -77,6 +78,7 @@ const PostDetail: React.FC = () => {
   const ws = useRef<WebSocket | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState<string | null>(null);
+  const [numberOfViewers, setNumberOfViewers] = useState<number | null>(null);
 
 
   // Ustvarite ref za textarea
@@ -138,6 +140,10 @@ const PostDetail: React.FC = () => {
           setTypingUser(message.user);
           setIsTyping(true);
           setTimeout(() => setIsTyping(false), 2000);
+        }
+
+        if (message.type === 'number_of_viewers' && message.postId === id && message.numberOfViewers > -1) {
+          setNumberOfViewers(message.numberOfViewers)
         }
       } catch(error) {
         console.error("WebSocket Error recieving message");
@@ -350,9 +356,15 @@ const PostDetail: React.FC = () => {
       borderRadius="lg"
       shadow="lg"
     >
-      <Button onClick={() => navigate(-1)} mb={6}>
-        Nazaj
-      </Button>
+      <HStack justify="space-between" align="center" mb={6}>
+        <Button onClick={() => navigate(-1)}>Nazaj</Button>
+        <HStack spacing={2}>
+          <FaEye size="1em" />
+          <Text>
+            {numberOfViewers !== null ? numberOfViewers : "N/A"}
+          </Text>
+        </HStack>
+      </HStack>
       {loading ? (
         <Spinner size="xl" />
       ) : post ? (

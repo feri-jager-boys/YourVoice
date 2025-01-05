@@ -19,6 +19,7 @@ function handleWSMessage (socket, clientId, message) {
 
     if (parsedMessage.type === "client_connected") {
       addClientToPosts(socket, clientId, parsedMessage);
+      broadcastNumberOfViewers(parsedMessage);
     } else if (parsedMessage.type === "client_close") {
       removeClientFromPosts(clientId, parsedMessage);
     } else if (parsedMessage.type === "typing") {
@@ -61,6 +62,24 @@ function broadcastTyping(currentClientId, parsedMessage) {
       });
       connection.send(message);
     }
+  });
+}
+
+function broadcastNumberOfViewers(parsedMessage) {
+  const postId = parsedMessage.postId;
+  if (!postId || !posts[postId]) return;
+
+  const numberOfViewers = Object.keys(posts[postId]).length;
+  console.log(numberOfViewers);
+
+  Object.keys(posts[postId]).forEach((clientId) => {
+      const connection = posts[postId][clientId];
+      const message = JSON.stringify({
+        type: 'number_of_viewers',
+        numberOfViewers: numberOfViewers,
+        postId: postId,
+      });
+      connection.send(message);
   });
 }
 
