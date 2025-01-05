@@ -22,6 +22,7 @@ function handleWSMessage (socket, clientId, message) {
       broadcastNumberOfViewers(parsedMessage);
     } else if (parsedMessage.type === "client_close") {
       removeClientFromPosts(clientId, parsedMessage);
+      broadcastNumberOfViewers(parsedMessage);
     } else if (parsedMessage.type === "typing") {
       broadcastTyping(clientId, parsedMessage);
     }
@@ -70,7 +71,6 @@ function broadcastNumberOfViewers(parsedMessage) {
   if (!postId || !posts[postId]) return;
 
   const numberOfViewers = Object.keys(posts[postId]).length;
-  console.log(numberOfViewers);
 
   Object.keys(posts[postId]).forEach((clientId) => {
       const connection = posts[postId][clientId];
