@@ -21,6 +21,8 @@ import { UserContext } from '../userContext';
 import { Post } from '../interfaces/Post';
 import { Tag } from "../interfaces/Tag";
 import {FaBold, FaCode, FaImage, FaItalic, FaLink} from "react-icons/fa";
+//import AddPollModal from './AddPollModal';
+//import { useDisclosure } from '@chakra-ui/react';
 
 interface AddPostModalProps {
   isOpen: boolean;
@@ -54,6 +56,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const toast = useToast();
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [isAppropriate, setIsAppropriate] = useState(true);
+  //const {isOpen: isPollOpen, onOpen: onPollOpen, onClose: onPollClose } = useDisclosure();
 
   // Populate fields when post is provided (for editing)
   useEffect(() => {
@@ -70,6 +73,10 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       fetchTags();
     }
   }, [post]);
+
+  /*const handlePollAdded = () => {
+    console.log("nekaj");
+  }*/
 
   const handleSubmit = () => {
     if (!user) {
@@ -88,7 +95,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       body: JSON.stringify({
         title: title,
         content: content,
-        tags: selectedTags.map((tag) => new Tag(tag.value, tag.label)),
+        tags: selectedTags.map((tag: Option) => new Tag(tag.value, tag.label)),
         userId: user._id, // Include userId
         forumId: forumId, // Include forumId
       }),

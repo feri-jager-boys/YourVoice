@@ -33,6 +33,8 @@ import { Forum } from "../interfaces/Forum";
 import { FaLink, FaImage, FaCode, FaBold, FaItalic } from 'react-icons/fa';
 import {generateHTML} from "../services/textService";
 import { FaEye } from 'react-icons/fa6';
+import PollList from './PollComponent';
+import AddPollModal from './AddPollModal';
 
 interface UserApiResponse {
   username: string;
@@ -79,6 +81,7 @@ const PostDetail: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const [numberOfViewers, setNumberOfViewers] = useState<number | null>(null);
+  const {isOpen: isPollOpen, onOpen: onPollOpen, onClose: onPollClose } = useDisclosure();
 
 
   // Ustvarite ref za textarea
@@ -198,6 +201,9 @@ const PostDetail: React.FC = () => {
       );
     }
   };
+  const handlePollAdded = () => {
+    console.log("nekaj");
+  }
 
   const handleCommentSubmit = () => {
     if (newComment.trim() === '') {
@@ -406,6 +412,10 @@ const PostDetail: React.FC = () => {
             </Text>
           </Flex>
           <Divider my={6} />
+          <Flex>
+            <PollList postId={String(id)}/>
+          </Flex>
+          <Divider my={6} />
           <HStack>
             <Heading as="h3" size="md" mb={4}>
               Komentarji
@@ -424,6 +434,18 @@ const PostDetail: React.FC = () => {
           >
             Dodaj komentar
           </Button>
+          <Button onClick={onPollOpen} colorScheme="blue" mb={4} ml={4}>
+              Dodaj novo anketo
+          </Button>
+            <AddPollModal
+              isOpen={isPollOpen}
+              onClose={() => {
+                onPollClose();
+              }}
+              postId={id}
+              onPollAdded={handlePollAdded}
+              poll={null}
+            />
 
           {post.comments && post.comments.length > 0 ? (
             <CommentListComponent

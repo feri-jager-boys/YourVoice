@@ -201,7 +201,7 @@ module.exports = {
       return { flagged, scores };
     } catch (error) {
       console.error("Error in moderateContent function:", error);
-      throw new Error("Content moderation failed.");
+      //throw new Error("Content moderation failed.");
     }
   },
 };

@@ -29,6 +29,7 @@ var usersRouter = require('./routes/UserRoutes');
 var postsRouter = require('./routes/PostRoutes');
 var forumsRouter = require('./routes/ForumRoutes');
 var commentRouter = require('./routes/CommentRoutes');
+var pollRouter = require('./routes/PollRoutes');
 
 var app = express();
 
@@ -44,6 +45,7 @@ hbs.registerPartials(__dirname + "/views/partials");
 const oneDay = 1000 * 60 * 60 * 24;
 var session = require('express-session');
 var MongoStore = require('connect-mongo');
+const PollControler = require('./controllers/PollControler');
 app.use(
   session({
     name: 'session',
@@ -90,6 +92,7 @@ app.use('/user', usersRouter);
 app.use('/post', postsRouter);
 app.use('/forum', forumsRouter);
 app.use('/comment', commentRouter);
+app.use('/poll', pollRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
