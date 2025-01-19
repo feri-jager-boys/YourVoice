@@ -49,10 +49,11 @@ const Register: React.FC = () => {
         userContext.setUserContext(data); // Setting user context with the new user data
 
         toast({
+          id: "toast_register_success",
           title: 'Registracija uspešna!',
           description: `Dobrodošli, ${username}!`,
           status: 'success',
-          duration: 3000,
+          duration: 30000,
           isClosable: true,
         });
         /*
@@ -142,6 +143,7 @@ const Register: React.FC = () => {
           )}
 
           <Button
+            id="register_button"
             colorScheme="blue"
             type="submit"
             mt={4}

@@ -48,7 +48,8 @@ const Login: React.FC = () => {
       if (data && data._id) {
         userContext.setUserContext(data);
         toast({
-          title: 'Prijava uspešna',
+          id: "toast_login_success",
+          title: 'Prijava uspešna!',
           description: `Dobrodošli, ${username}!`,
           status: 'success',
           duration: 3000,
@@ -135,6 +136,7 @@ const Login: React.FC = () => {
           )}
 
           <Button
+            id="login_button"
             colorScheme="blue"
             type="submit"
             mt={4}
