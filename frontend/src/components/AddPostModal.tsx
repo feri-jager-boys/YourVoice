@@ -205,6 +205,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
           <FormControl mb={4}>
             <FormLabel>Naslov</FormLabel>
             <Input
+                id="title"
               ref={titleInputRef} // Ref for focus
               placeholder="Vnesite naslov"
               value={title}
@@ -256,6 +257,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
           </div>
           <FormControl mb={4}>
             <Textarea
+                id="content"
               placeholder="Vnesite vsebino"
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -265,7 +267,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" onClick={handleSubmit} mr={3}>
+          <Button colorScheme="blue" onClick={handleSubmit} mr={3} id="add_new_post_btn">
             {post ? 'Shrani' : 'Dodaj'}
           </Button>
           <Button onClick={onClose}>Prekliči</Button>

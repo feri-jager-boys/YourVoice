@@ -96,7 +96,7 @@ const Forums: React.FC = () => {
       ) : (
         <Stack spacing={6}>
           {forums.map((forum) => (
-            <Link to={`/forums/${forum._id}`}>
+            <Link to={`/forums/${forum._id}`} className="open_forum">
             <Box
               key={forum._id}
               p={5}

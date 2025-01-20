@@ -121,7 +121,7 @@ const Posts: React.FC = () => {
         {forumId ? forum ? forum.title : "Forum - Objave" : "Najnovejše Objave"}
       </Heading>
       {user && forumId && (
-        <Button onClick={onOpen} colorScheme="blue" mb={6}>
+        <Button onClick={onOpen} colorScheme="blue" mb={6} id="add_new_post">
           Dodaj novo objavo
         </Button>
       )}
