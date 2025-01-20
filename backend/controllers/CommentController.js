@@ -2,6 +2,7 @@ var CommentModel = require('../models/CommentModel');
 var CommentVoteModel = require('../models/CommentVoteModel');
 const CommentVoteTypes = require("../models/CommentVoteTypes");
 const axios = require('axios');
+const mongoose = require("mongoose");
 
 /**
  * CommentController.js
@@ -49,13 +50,9 @@ module.exports = {
         const commentId = req.params.id;
 
         try {
-            const comment = await CommentModel.findByIdAndRemove(commentId);
-
-            if (!comment) {
-                return res.status(404).json({
-                    message: 'No such comment',
-                });
-            }
+            await CommentModel.findByIdAndUpdate(
+                commentId,
+                { content: "[DELETED]", userId: mongoose.Types.ObjectId("000000000000000000000000") });
 
             return res.status(204).json({});
         } catch (err) {
