@@ -38,7 +38,7 @@ const Header: React.FC = () => {
           {routesToShow
             .filter((route) => route.visible)
             .map((route: RouteType) => (
-              <li key={route.to} className="nav-item">
+              <li key={route.to} className="nav-item" id={route.name}>
                 <NavLink
                   to={route.to}
                   className={({ isActive }) =>

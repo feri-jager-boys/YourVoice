@@ -83,7 +83,7 @@ const Forums: React.FC = () => {
         Pregled Forumov
       </Heading>
       {user && (
-        <Button onClick={onOpen} colorScheme="blue" mb={6}>
+        <Button onClick={onOpen} colorScheme="blue" id="add_forum" mb={6}>
           Dodaj nov forum
         </Button>
       )}

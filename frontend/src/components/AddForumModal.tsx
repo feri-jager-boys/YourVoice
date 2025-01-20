@@ -84,6 +84,7 @@ const AddForumModal: React.FC<AddForumModalProps> = ({
                     title: forum
                         ? 'Forum uspešno posodobljen!'
                         : 'Forum uspešno dodan!',
+                    id: "forum_added_success",
                     status: 'success',
                 });
                 setTitle('');
@@ -135,6 +136,7 @@ const AddForumModal: React.FC<AddForumModalProps> = ({
                 <FormControl mb={4}>
                     <FormLabel>Naslov</FormLabel>
                     <Input
+                        id="title_input"
                         ref={titleInputRef} // Ref for focus
                         placeholder="Vnesite naslov"
                         value={title}
@@ -173,7 +175,7 @@ const AddForumModal: React.FC<AddForumModalProps> = ({
             </ModalBody>
 
             <ModalFooter>
-                <Button colorScheme="blue" onClick={handleSubmit} mr={3}>{forum ? 'Shrani' : 'Dodaj'}</Button>
+                <Button id="add_forum_modal" colorScheme="blue" onClick={handleSubmit} mr={3}>{forum ? 'Shrani' : 'Dodaj'}</Button>
                 <Button onClick={onClose}>Prekliči</Button>
             </ModalFooter>
         </ModalContent>
