@@ -213,11 +213,18 @@ const setRepliesOnPost = async (post, userId) => {
     .lean()
     .exec()
 
-  const topComments = postComments.filter(x => x.parentId == null);
+  const postComments2 = postComments.map(comment => {
+    if (!comment.userId || !comment.userId.username) {
+      comment.userId = { username: "Ghost" };
+    }
+    return comment;
+  });
+
+  const topComments = postComments2.filter(x => x.parentId == null);
 
   await Promise.all(
     topComments.map(async (topComment) => {
-      await setRepliesAndVotesOnComment(postComments, topComment, userId);
+      await setRepliesAndVotesOnComment(postComments2, topComment, userId);
     }));
 
   post.comments = topComments;
